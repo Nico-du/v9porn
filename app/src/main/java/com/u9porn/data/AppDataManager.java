@@ -6,6 +6,7 @@ import com.u9porn.data.db.DbHelper;
 import com.u9porn.data.model.BaseResult;
 import com.u9porn.data.db.entity.Category;
 import com.u9porn.data.model.F9PronItem;
+import com.u9porn.data.model.HuaBan;
 import com.u9porn.data.model.MeiZiTu;
 import com.u9porn.data.model.Mm99;
 import com.u9porn.data.model.Notice;
@@ -514,6 +515,16 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
+    public boolean isShowUrlRedirectTipDialog() {
+        return mPreferencesHelper.isShowUrlRedirectTipDialog();
+    }
+
+    @Override
+    public void setShowUrlRedirectTipDialog(boolean showUrlRedirectTipDialog) {
+        mPreferencesHelper.setShowUrlRedirectTipDialog(showUrlRedirectTipDialog);
+    }
+
+    @Override
     public void existProxyTest() {
         mApiHelper.existProxyTest();
     }
@@ -531,6 +542,11 @@ public class AppDataManager implements DataManager {
     @Override
     public Observable<Boolean> testPavAddress(String url) {
         return mApiHelper.testPavAddress(url);
+    }
+
+    @Override
+    public Observable<List<HuaBan.Picture>> findPictures(int categoryId, int page) {
+        return mApiHelper.findPictures(categoryId, page);
     }
 
     @Override
