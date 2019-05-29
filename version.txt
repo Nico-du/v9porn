@@ -1,12 +1,11 @@
 {
-"apkDownloadUrl": "https://raw.githubusercontent.com/techGay/v9porn/master/apk/app-v1.0.4.apk",
-"updateMessage": "1. 修复九妹图社图片问题（不过网站更新频繁，估计是防抓取了）\n
-                  2. 改变保存图片通知图库方式\n
-                  3. 升级滑动关闭库，应该是能解决部分机子底下留空问题\n
-                  4. 其他细小改善和bug修复\n
-
-                  最近都挺忙，没什么时间做新功能，加上项目后台观测也没发现什么非常大bug，所以不那么频繁的更新
+"apkDownloadUrl": "https://raw.githubusercontent.com/techGay/v9porn/master/apk/v9porn-v1.1.2.apk",
+"updateMessage": "
+1. 修复因升级targetSdkVersion28导致的下载以及浏览论坛崩溃问题\n
+2. 现在不登录也能无限制观看作者其他的视频\n
+3. 其他改动调整及bug修复\n
+注意：无法自动更新或者9.0以上系统需要手动下载apk升级
 ",
-"versionCode": 5,
-"versionName": "1.0.4"
+"versionCode": 13,
+"versionName": "1.1.2"
 }

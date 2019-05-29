@@ -6,21 +6,23 @@ import android.text.TextUtils;
 
 import com.franmontiel.persistentcookiejar.PersistentCookieJar;
 import com.orhanobut.logger.Logger;
+import com.u9porn.cookie.RulerCookie;
 import com.u9porn.cookie.SetCookieCache;
 import com.u9porn.cookie.SharedPrefsCookiePersistor;
 import com.u9porn.data.network.Api;
+import com.u9porn.data.network.apiservice.AxgleServiceApi;
 import com.u9porn.data.network.apiservice.Forum9PronServiceApi;
 import com.u9porn.data.network.apiservice.GitHubServiceApi;
 import com.u9porn.data.network.apiservice.HuaBanServiceApi;
 import com.u9porn.data.network.apiservice.MeiZiTuServiceApi;
 import com.u9porn.data.network.apiservice.Mm99ServiceApi;
 import com.u9porn.data.network.apiservice.PavServiceApi;
-import com.u9porn.data.network.apiservice.V9PornServiceApi;
 import com.u9porn.data.network.apiservice.ProxyServiceApi;
-import com.u9porn.di.ApplicationContext;
-import com.u9porn.utils.AddressHelper;
+import com.u9porn.data.network.apiservice.V9PornServiceApi;
 import com.u9porn.data.network.okhttp.CommonHeaderInterceptor;
 import com.u9porn.data.network.okhttp.MyProxySelector;
+import com.u9porn.di.ApplicationContext;
+import com.u9porn.utils.AddressHelper;
 
 import java.net.Proxy;
 import java.util.ArrayList;
@@ -66,11 +68,17 @@ public class ApiServiceModule {
 
     @Singleton
     @Provides
+    RulerCookie providesRuler(SharedPrefsCookiePersistor sharedPrefsCookiePersistor, SetCookieCache setCookieCache){
+        return new RulerCookie(setCookieCache,sharedPrefsCookiePersistor);
+    }
+
+    @Singleton
+    @Provides
     HttpLoggingInterceptor providesHttpLoggingInterceptor() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
             @Override
             public void log(@NonNull String message) {
-                Logger.t(TAG).d("HttpLog:" + message);
+                Logger.t(TAG).d(message);
             }
         });
         logging.setLevel(HttpLoggingInterceptor.Level.HEADERS);
@@ -85,12 +93,13 @@ public class ApiServiceModule {
 
     @Singleton
     @Provides
-    OkHttpClient providesOkHttpClient(CommonHeaderInterceptor commonHeaderInterceptor, HttpLoggingInterceptor httpLoggingInterceptor, PersistentCookieJar persistentCookieJar, MyProxySelector myProxySelector, AddressHelper addressHelper) {
+    OkHttpClient providesOkHttpClient(CommonHeaderInterceptor commonHeaderInterceptor, HttpLoggingInterceptor httpLoggingInterceptor, RulerCookie rulerCookie, MyProxySelector myProxySelector, AddressHelper addressHelper) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.addInterceptor(commonHeaderInterceptor);
         builder.addInterceptor(httpLoggingInterceptor);
-        builder.cookieJar(persistentCookieJar);
+        builder.cookieJar(rulerCookie);
         builder.proxySelector(myProxySelector);
+       // builder.sslSocketFactory(new TLSSocketFactory(),TLSSocketFactory.DEFAULT_TRUST_MANAGERS);
         //动态baseUrl
         RetrofitUrlManager.getInstance().putDomain(Api.GITHUB_DOMAIN_NAME, Api.APP_GITHUB_DOMAIN);
         RetrofitUrlManager.getInstance().putDomain(Api.MEI_ZI_TU_DOMAIN_NAME, Api.APP_MEIZITU_DOMAIN);
@@ -105,6 +114,9 @@ public class ApiServiceModule {
         }
         if (!TextUtils.isEmpty(addressHelper.getPavAddress())) {
             RetrofitUrlManager.getInstance().putDomain(Api.PA_DOMAIN_NAME, addressHelper.getPavAddress());
+        }
+        if (!TextUtils.isEmpty(addressHelper.getAxgleAddress())) {
+            RetrofitUrlManager.getInstance().putDomain(Api.AXGLE_DOMAIN_NAME, addressHelper.getAxgleAddress());
         }
         return RetrofitUrlManager.getInstance().with(builder).build();
     }
@@ -166,5 +178,11 @@ public class ApiServiceModule {
     @Provides
     HuaBanServiceApi providesHuaBanServiceApi(Retrofit retrofit) {
         return retrofit.create(HuaBanServiceApi.class);
+    }
+
+    @Singleton
+    @Provides
+    AxgleServiceApi providesAxgleServiceApi(Retrofit retrofit) {
+        return retrofit.create(AxgleServiceApi.class);
     }
 }
